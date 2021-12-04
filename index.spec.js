@@ -6,7 +6,7 @@ const { define, it } = new TestBed();
 const herocoders = new Herocoders();
 
 define('Herocoders Components tests', () => {
-    it('should returns two no lead components and jql issues query', expect => {
+    it('should return two no lead components and jql issues query', expect => {
         const [noLeadComponents, jqlIssues] = herocoders.issuesQuery([
             { lead: {}, name: 'Name0' },
             { name: 'Name1' },
@@ -19,19 +19,20 @@ define('Herocoders Components tests', () => {
         expect(result1 && result2).toBeTruthy();
     });
 
-    it('should returns map where key is component name and its value is array of issues\' ids', expect => {
+    it('should return map where key is component name and its value is the number of related issues', expect => {
         const result = herocoders.match([
             { name: 'Name1' },
             { name: 'Name2' },
         ], [
-            { id: 1, fields: { components: [{name: 'Name0'}, {name: 'Name3'}] } },
-            { id: 2, fields: { components: [{name: 'Name1'}, {name: 'Name3'}] } },
-            { id: 3, fields: { components: [{name: 'Name0'}, {name: 'Name2'}] } },
+            { fields: { components: [{name: 'Name0'}, {name: 'Name3'}] } },
+            { fields: { components: [{name: 'Name1'}, {name: 'Name3'}] } },
+            { fields: { components: [{name: 'Name0'}, {name: 'Name2'}] } },
+            { fields: { components: [{name: 'Name2'}, {name: 'Name4'}] } },
         ]);
 
-        const r1 = 'Name1' in result && 'Name2' in result;
-        const r2 = result.Name1.includes(2) && result.Name2.includes(3);
+        const result1 = 'Name1' in result && 'Name2' in result;
+        const result2 = result.Name1 === 1 && result.Name2 === 2;
 
-        expect(r1 && r2).toBeTruthy();
+        expect(result1 && result2).toBeTruthy();
     });
 });

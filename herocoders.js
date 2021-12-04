@@ -46,7 +46,7 @@ module.exports = class Herocoders {
                 .filter(({ fields: { components: issueComponents } }) => {
                     return issueComponents.some(({ name: icName }) => icName === component.name)
                 })
-                .map(({ id }) => id);
+                .length;
 
             return acc;
         }, {});
