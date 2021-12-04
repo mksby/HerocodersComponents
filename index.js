@@ -1,5 +1,5 @@
 const { get } = require('./lib/https');
-const { writeFile } = require('./lib/fs');
+const { createDir, writeFile } = require('./lib/fs');
 
 const API_URL = 'https://herocoders.atlassian.net/rest/api/3';
 
@@ -31,11 +31,11 @@ get(`${API_URL}${routes.components}`)
             return acc;
         }, {});
 
-
-        return Promise.all([
-            writeFile('./+no-lead-components.json', components),
-            writeFile('./+no-lead-components-issues.json', issues),
-            writeFile('./+final-result.json', result)
-        ])
+        return createDir('./json').then(() => Promise.all([
+            writeFile('./json/no-lead-components.json', components),
+            writeFile('./json/no-lead-components-issues.json', issues),
+            writeFile('./json/final-result.json', result)
+        ]))
     })
     .catch(console.error);
+    
