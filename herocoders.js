@@ -14,10 +14,7 @@ module.exports = class Herocoders {
             .then(components => {
                 const [noLeadComponents, jqlIssues] = this.#issuesQuery(components);
 
-                return get(`${this.#API_URL}${this.#routes.search}?${jqlIssues}`).then(({ issues }) => ({
-                    components: noLeadComponents,
-                    issues
-                }))
+                return this.#loadPagedIssues(noLeadComponents, jqlIssues);
             })
             .then(({ components, issues }) => {
                 const result = this.#match(components, issues);
@@ -29,6 +26,21 @@ module.exports = class Herocoders {
                 ]))
             })
             .catch(console.error);
+    }
+
+    #loadPagedIssues(noLeadComponents, jqlIssues, startAt = 0, allPagesIssues = []) {
+        const maxResults = 100;
+
+        return get(`${this.#API_URL}${this.#routes.search}?${jqlIssues}&maxResults=${maxResults}&startAt=${startAt}`).then(({ issues }) => {
+            if (issues.length < maxResults) {
+                return {
+                    components: noLeadComponents,
+                    issues: allPagesIssues.concat(issues)
+                }
+            }
+
+            return this.#loadPagedIssues(noLeadComponents, jqlIssues, startAt + maxResults, allPagesIssues.concat(issues));
+        })
     }
 
     #issuesQuery(components) {
