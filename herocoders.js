@@ -31,15 +31,17 @@ module.exports = class Herocoders {
     #loadPagedIssues(noLeadComponents, jqlIssues, startAt = 0, allPagesIssues = []) {
         const maxResults = 100;
 
-        return get(`${this.#API_URL}${this.#routes.search}?${jqlIssues}&maxResults=${maxResults}&startAt=${startAt}`).then(({ issues }) => {
-            if (issues.length < maxResults) {
+        return get(`${this.#API_URL}${this.#routes.search}?${jqlIssues}&maxResults=${maxResults}&startAt=${startAt}`).then(({ issues, total }) => {
+            allPagesIssues = allPagesIssues.concat(issues);
+
+            if (allPagesIssues.length < total) {
                 return {
                     components: noLeadComponents,
                     issues: allPagesIssues.concat(issues)
                 }
             }
 
-            return this.#loadPagedIssues(noLeadComponents, jqlIssues, startAt + maxResults, allPagesIssues.concat(issues));
+            return this.#loadPagedIssues(noLeadComponents, jqlIssues, startAt + maxResults, allPagesIssues);
         })
     }
 
